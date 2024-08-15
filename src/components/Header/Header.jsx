@@ -1,12 +1,47 @@
+import { useEffect, useState } from "react"
 import { BriefcaseBusiness, Map, SlidersHorizontal } from "lucide-react"
 import SelectedPlace from "./components/SelectedPlace"
+import { getGeocodingData } from "../../services/geocodingService"
 
 function Header() {
-  const UserPlace = {
-    shortcut: "Work",
-    address: "Av. Visconde de Guarapuava 3263",
-    id: Math.random() * 100,
-  }
+  const [userPlace, setUserPlace] = useState(null)
+
+  useEffect(() => {
+    const fetchGeocodingData = async (latitude, longitude) => {
+      const result = await getGeocodingData(latitude, longitude)
+
+      if (result.success) {
+        setUserPlace({
+          id: 1,
+          shortcut: `Lat: ${latitude}, Lon: ${longitude}`,
+          address: result.address,
+        })
+      } else {
+        console.error(result.message)
+        setUserPlace({
+          id: 0,
+          shortcut: `Lat: ${latitude}, Lon: ${longitude}`,
+          address: "Erro ao buscar endereço",
+        })
+      }
+    }
+
+    // Captura a localização do usuário
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords
+        fetchGeocodingData(latitude, longitude)
+      },
+      (error) => {
+        console.error("Erro ao obter a localização:", error)
+        setUserPlace({
+          id: 0,
+          shortcut: "Localização não disponível",
+          address: "Erro ao obter a localização",
+        })
+      },
+    )
+  }, [])
 
   return (
     <header className="flex items-center gap-1">
@@ -16,11 +51,13 @@ function Header() {
           className="text-white"
         />
       </div>
-      <SelectedPlace
-        key={UserPlace.id}
-        placeShortcut={UserPlace.shortcut}
-        address={UserPlace.address}
-      />
+      {userPlace && (
+        <SelectedPlace
+          key={userPlace.id}
+          placeShortcut={userPlace.shortcut}
+          address={userPlace.address}
+        />
+      )}
       <span className="bg-gray-20% rounded-full p-1.5">
         <SlidersHorizontal
           size={20}
