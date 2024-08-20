@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router-dom"
 import Home from "../pages/Home/Home"
 import Login from "../pages/Login/Login"
-import Restaurants from "../pages/Restaurants/Restaurants"
+import RestaurantsAndFoods from "../pages/RestaurantsAndFoods/RestaurantsAndFoods"
+import NotFound from "../pages/404/NotFound"
 
 const AppRoutes = () => (
   <Routes>
@@ -15,7 +16,11 @@ const AppRoutes = () => (
     />
     <Route
       path="/restaurants"
-      element={<Restaurants />}
+      element={<RestaurantsAndFoods />}
+    />
+    <Route
+      path="*"
+      element={<NotFound />}
     />
   </Routes>
 )
